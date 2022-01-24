@@ -34,7 +34,7 @@
     "type": "git",
     "url": "git+https://github.com/FlamesX-128/bys.git"
   },
-  "private": true,
+  "private": false,
   "bugs": {
     "url": "https://github.com/FlamesX-128/bys/issues"
   },
