@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-
-import { join, resolve, sep } from "path";
+import path from "path";
 
 import minimist, { ParsedArgs } from "minimist";
 
@@ -16,5 +14,11 @@ import { Config } from "./interfaces/config";
 
   const config = await get_config(directory, args);
 
-  await bundle(directory, config);
+  const current_directory = path.join(directory, config.entry!).split(path.sep);
+  config.entry = current_directory[current_directory.length - 1];
+  current_directory.pop();
+
+  await bundle(current_directory.join(path.sep), config);
 })();
+
+export = Config

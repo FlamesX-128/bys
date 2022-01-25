@@ -1,5 +1,8 @@
 # **CHANGELOG**
 
+## **2.0.1 ─ Directories issue fixed **
++ Directories issue fixed.
+
 ## **2.0.0 - Transpilers**
 
 + Config file is now a javascript file instead of .json.
