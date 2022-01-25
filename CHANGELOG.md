@@ -1,6 +1,6 @@
 # **CHANGELOG**
 
-## **2.0.0 - Transpilators!**
+## **2.0.0 - Transpilers**
 
 + Config file is now a javascript file instead of .json.
 + New "extension" flag, used to specify the extension that the file created by bys will have.
