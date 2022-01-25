@@ -16,7 +16,5 @@ import { Config } from "./interfaces/config";
 
   const config = await get_config(directory, args);
 
-  console.log(config)
-
   await bundle(directory, config);
 })();
