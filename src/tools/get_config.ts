@@ -1,42 +1,41 @@
-import { readFileSync, existsSync } from "fs";
-import { join } from "path";
-
+import { existsSync } from "fs";
 import { ParsedArgs } from "minimist";
+import { join } from "path";
+import { Config } from "../interfaces/config";
 
-export function get_config(directory: string, args: ParsedArgs): Config {
-  const [bys, pke] = ["bys.config", "package"].map(function (
-    file: string
-  ): any {
-    const path = join(directory, file + ".json");
+export async function get_config(dirPath: string, args: ParsedArgs) {
+  let [bys, pke] = await Promise.all(
+    ["bys.config.js", "package.json"].map(async (file) => {
+      const path = join(dirPath, file);
 
-    if (existsSync(path))
-      return JSON.parse(readFileSync(path, { encoding: "utf8" }));
+      if (existsSync(path)) return await import(path);
 
-    return {};
-  });
+      return {};
+    })
+  );
 
   let config: Config = {
     entry: args["entry"] ? args["entry"] : bys.entry ? bys.entry : pke.main,
     output: {},
+    transpiler: bys.transpiler,
+    transpilers: bys.transpilers,
   };
 
   if (!config.entry)
     throw new Error(
-      "An entry is needed, you can create a package.json, bys.config.json or use the flag \"--entry='your_main_file'\""
+      "An entry is needed, you can create a package.json, bys.config.js or use the flag \"--entry='your_main_file'\""
     );
 
-  const ext = config.entry!.split(".");
-
-  [("filename-bundle." + ext[ext.length - 1]), "dirname"].map(function (property: string): void {
-    const [prop, name] = property.split("-");
-
-    config["output"]![prop as "filename" | "dirname"] = args["output-" + prop]
-      ? args["output-" + prop]
+  [
+    ["filename", pke.main || "bundle"],
+    ["path", dirPath],
+    ["extention", ".js"]
+  ].map(([prop, alt]: string[]) => {
+    config["output"]![prop as "filename" | "path"] = args[`output-${prop}`]
+      ? args[`output-${prop}`]
       : bys["output"] && bys["output"][prop]
-      ? bys["output"][prop]
-      : name && name !== ""
-      ? name
-      : "";
+        ? bys["output"][prop]
+        : alt;
   });
 
   return config;

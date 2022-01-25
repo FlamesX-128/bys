@@ -1,7 +1,13 @@
-interface Config {
-  entry?: string;
+export interface Config {
+  entry?: string,
   output?: {
-    dirname?: string;
-    filename?: string;
-  };
+    extention?: string,
+    filename?: string,
+    path?: string
+  },
+  transpiler?(code: string): Promise<string> | string
+  transpilers?: {
+    execute?(code: string): Promise<string> | string,
+    extentions?: RegExp
+  }[]
 }

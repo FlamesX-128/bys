@@ -26,10 +26,10 @@ With the flags you can change how the program will work.
   + Usage: `$ bys --entry="main.js"`
   + Required flag.
 
-- **output-dirname**
-  + This flag specifies the name of the folder where the file will be added.
-  + If not added, the file is placed in the directory where it was called bys.
-  + Usage: `$ bys --output-dirname="main.js"`
+- **output-extention**
+  + This flag specifies the extension that the file created by bys will have.
+  + If not specified, defaults to ".js".
+  + Usage: `$ bys --output-extention=".js"`
   + Optional flag.
 
 - **output-filename**
@@ -38,71 +38,181 @@ With the flags you can change how the program will work.
   + Usage: `$ bys --output-filename="bundle.js"`
   + Optional flag.
 
-### **Configuration file**
-You can create a configuration file for bys called `bys.config.json` with the following structure:
+- **output-path**
+  + This flag specifies the directory where the file created by bys is saved.
+  + If not added, the file is placed in the directory where it was called bys.
+  + Usage: `$ bys --output-path="main.js"`
+  + Optional flag.
 
-```json
-{
-  "entry": "",
-  "output": {
-    "dirname": "",
-    "filename": ""
-  }
+### **Configuration file**
+You can create a configuration file for bys called `bys.config.js` with the following structure:
+
+```ts
+export interface Config {
+  // Main file that read.
+  entry?: string,
+  output?: {
+    // File extension to use when creating.
+    extention?: string,
+    // Name of the file that will be assigned when it is created.
+    filename?: string,
+    // Path of the directory where the file created by bys will be saved
+    path?: string
+  },
+  // This method is to transpire the code at the end of joining the files.
+  transpiler?(code: string): Promise<string> | string
+  // This method is used to transpile the files at the moment they are read.
+  transpilers?: {
+    execute?(code: string): Promise<string> | string,
+    extentions?: RegExp
+  }[]
 }
 ```
 
-### **Example**
+#### **Configuration file example**
+
+```js
+// File: bys.config.js
+const { join } = require('path');
+
+module.exports = {
+  entry: 'main.js',
+  output: {
+    extention: ".js",
+    filename: 'bundle',
+    path: join(__dirname, "dist")
+  },
+  transpilers: []
+}
+```
+
+### **Bys usage example**
 Here are some examples of using bys with js and ts.
 
-Using JavaScript (JS)
-```js
-// File: sum.js
+<details>
+  <summary>Using JavaScript</summary>
 
-function sum(x, y) {
-  return x + y;
-}
-```
-```js
-// File: main.js
+  ```js
+  // File: bys.config.js
 
-// @bys-import ./sum.js \\
-console.log(sum(1, 3))
-```
+  module.exports = {
+    entry: 'main.js',
+    output: {
+      extention: ".js",
+      filename: 'bundle',
+      path: join(__dirname, "dist")
+    }
+  }
+  ```
 
-Result after using bys:
-```js
-// File: bundle.js
-function sum(x, y) {
-  return x + y;
-}
-console.log(sum(1, 3))
-```
+  ```js
+  // File: sum.js
 
----
+  const sum = (x, y) => x + y;
+  ```
 
-Using TypeScript (TS)
-```ts
-// File: pong.ts
+  ```js
+  // @bys-import ./sum.js \\
 
-function pong() {
-  return "Pong!";
-}
-```
-```ts
-// File: main.ts
+  console.log(sum(2, 2));
+  ```
 
-// @bys-import ./pong.ts \\
-console.log(pong())
-```
+  ```js
+  // Result after using bys.
+  // File: dist/bundle.js
 
-Result after using bys:
-```ts
-// File: bundle.ts
-function pong() {
-  return "Pong!";
-}
-console.log(pong())
-```
+  const sum = (x, y) => x + y;
+
+  console.log(sum(2, 2));
+  ```
+
+</details>
+
+<details>
+  <summary>Using TypeScript</summary>
+
+  ```js
+  // File: bys.config.js
+  const { transpile } = require('typescript');
+  const { join } = require('path');
+
+  module.exports = {
+    entry: 'main.ts',
+    output: {
+      extention: ".js",
+      filename: 'bundle',
+      path: join(__dirname, "out")
+    },
+    transpiler: (code) => transpile(code, {
+      /* Language and Environment */
+      target: "es2016",
+
+      /* Modules */
+      module: "AMD",
+      moduleResolution: "node",
+
+      /* Emit */
+      removeComments: true,
+
+      /* Interop Constraints */
+      esModuleInterop: true,
+      forceConsistentCasingInFileNames: true,
+
+      /* Type Checking */
+      strict: true,
+      alwaysStrict: true,
+    })
+  }
+  ```
+
+  ```ts
+  // File: user.ts
+
+  class User {
+    private username: string
+    public readonly email: string
+
+    constructor(username: string, email: string) {
+      this.username = username,
+      this.email = email
+    }
+
+    public hello(): void {
+      console.log("Hello")
+    }
+  }
+  ```
+
+  ```ts
+  // File: main.ts
+
+  // @bys-import user.ts \\
+
+  const user = new User("carlos", "carlos@gmail.com");
+  user.hello();
+  ```
+
+  ```ts
+  // Result after using bys.
+  // File: out/bundle.js
+
+  define(["require", "exports"], function (require, exports) {
+    "use strict";
+    class User {
+        constructor(username, email) {
+            this.username = username,
+                this.email = email;
+        }
+        hello() {
+            console.log("Hello");
+        }
+    }
+    const user = new User("carlos", "carlos@gmail.com");
+    user.hello();
+  });
+  ```
+
+</details>
 
 ## **Contributing**
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
