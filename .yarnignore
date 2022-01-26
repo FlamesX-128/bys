@@ -3,6 +3,6 @@ src/
 test/
 
 .gitignore
-.yarnignore
+.npmignore
 CHANGELOG.md
 tsconfig.json

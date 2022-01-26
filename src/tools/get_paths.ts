@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /*
 
   MIT License
@@ -26,25 +24,13 @@
 
 */
 
-import { join } from "path";
+import path from "path";
 
-import minimist, { ParsedArgs } from "minimist";
+export function get_paths(dirPath: string): [string, string] {
+  const paths: string[] = dirPath.split(path.sep),
+    file: string = paths[paths.length - 1];
 
-import { get_config } from "./tools/get_config";
-import { bundle } from "./tools/bundle";
-import { Config } from "./interfaces/config";
-import { get_paths } from "./tools/get_paths";
+  paths.pop();
 
-(async function main(): Promise<void> {
-  const args: ParsedArgs = minimist(process.argv.slice(2)),
-    directory: string = process.cwd();
-
-  const config = await get_config(args, directory);
-
-  const [dirPath, fileName] = get_paths(join(directory, config.entry!));
-  config.entry = fileName;
-
-  await bundle(dirPath, fileName, config);
-})();
-
-export = Config;
+  return [paths.join(path.sep), file];
+}
