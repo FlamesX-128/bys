@@ -1,5 +1,5 @@
 {
-  "name": "@flamesx128/bys",
+  "name": "@FlamesX-128/bys",
   "version": "2.0.2",
   "description": "Bys is an npm/yarn library to merge your js and ts files into one file.",
   "main": "dist/main.js",
@@ -30,10 +30,7 @@
   "dependencies": {
     "minimist": "^1.2.5"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/FlamesX-128/bys.git"
-  },
+  "repository": "https://github.com/FlamesX-128/bys.git",
   "private": false,
   "bugs": {
     "url": "https://github.com/FlamesX-128/bys/issues"
@@ -41,6 +38,6 @@
   "homepage": "https://github.com/FlamesX-128/bys#readme",
   "directories": {},
   "publishConfig": {
-    "@flamesx128:registry": "https://npm.pkg.github.com/"
+    "registry": "https://npm.pkg.github.com/"
   }
 }
