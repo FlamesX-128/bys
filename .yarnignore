@@ -6,3 +6,4 @@ test/
 .npmignore
 CHANGELOG.md
 tsconfig.json
+yarn-error.log

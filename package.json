@@ -41,6 +41,6 @@
   "homepage": "https://github.com/FlamesX-128/bys#readme",
   "directories": {},
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/@flamesx128/bys"
+    "registry": "https://npm.pkg.github.com/"
   }
 }
